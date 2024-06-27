@@ -16,6 +16,7 @@ import { DropdownComponent } from './dropdown/dropdown.component';
 import { PopoverComponent } from './popover/popover.component';
 import { TabsComponent } from './tabs/tabs.component';
 import { TooltipComponent } from './tooltip/tooltip.component';
+import { DatepickerComponent } from './datepicker/datepicker.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { TooltipComponent } from './tooltip/tooltip.component';
     DropdownComponent,
     PopoverComponent,
     TabsComponent,
-    TooltipComponent
+    TooltipComponent,
+    DatepickerComponent
   ],
   imports: [
     BrowserModule,

@@ -13,6 +13,7 @@ import { DropdownComponent } from './dropdown/dropdown.component';
 import { PopoverComponent } from './popover/popover.component';
 import { TabsComponent } from './tabs/tabs.component';
 import { TooltipComponent } from './tooltip/tooltip.component';
+import { DatepickerComponent } from './datepicker/datepicker.component';
 
 
 const routes: Routes = [
@@ -28,7 +29,8 @@ const routes: Routes = [
   { path: 'dropdown', component: DropdownComponent },
   { path: 'popover', component: PopoverComponent },
   { path: 'tabs', component: TabsComponent },
-  { path: 'tooltip', component: TooltipComponent }
+  { path: 'tooltip', component: TooltipComponent },
+  { path: 'datepicker', component: DatepickerComponent }
 ];
 
 @NgModule({
