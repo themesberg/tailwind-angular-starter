@@ -1,30 +1,100 @@
-# Tailwind CSS + Angular (CLI) + Flowbite Starter
+## Tailwind 4 Angular Starter
 
-Get started with this starter project based on a Tailwind CSS, Angular and Flowbite configuration to help you get started building enterprise-level web applications based on the utility classes from Tailwind CSS and components from Flowbite. 
+[Follow this guide](https://flowbite.com/docs/getting-started/angular/) to learn how to set up a new Angular project with Tailwind CSS and integrate the open-source UI components from the Flowbite Library.
 
-This repository is based on the [Tailwind CSS + Angular](https://flowbite.com/docs/getting-started/angular/) guide on the Flowbite website.
+## Create Angular project
 
-## Getting started
+The recommended and quickest way to get started with creating a new Angular project is by installing the official CLI tool by running the following command in your terminal:
 
-Make sure that you have Node.js installed on your project. Run the following command to install all dependencies:
-
-```
-npm install
+```bash
+npm install -g @angular/cli
 ```
 
-## Development server
+This command will make the Angular CLI available on your local computer.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+1. Run the following command to create a new Angular project:
 
-## Code scaffolding
+```bash
+ng new flowbite-app
+```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+You can follow the instructions from the CLI prompts to select the options that you want to choose when creating a new project - you should select "CSS" when asked.
 
-## Build
+This command will create a new folder called `flowbite-app` where you have all the necessary source files to start a new local and production-ready Angular project.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+2. Run the `ng serve --open` command in your terminal to start a local server:
 
-Update the `app.component.ts` file to use the `initFlowbite` function to enable the interactive components via data attributes:
+```bash
+ng serve --open
+```
+
+This will create a local development server and automatically open a new tab on the `localhost:4200` port by adding the `--open` flag to the command.
+
+Congratulations! Now you have a fully working Angular project installed and configured.
+
+## Install Tailwind CSS
+
+Now that you've successfully installed and configured an Angular project we can proceed with installing the most popular utility-first CSS framework called Tailwind.
+
+1. Install Tailwind CSS and Post CSS via NPM by running the following command:
+
+```bash
+npm install tailwindcss @tailwindcss/postcss postcss --save
+```
+
+This command will install all the dependencies of Tailwind CSS available in your `package.json` file.
+
+2. Create a `.postcssrc.json` file in the root folder of your project and include the Tailwind PostCSS plugin:
+
+```javascript
+{
+  "plugins": {
+    "@tailwindcss/postcss": {}
+  }
+}
+```
+
+3. Import the core Tailwind directive inside the `styles.css` file:
+
+```css
+/* You can add global styles to this file, and also import other style files */
+
+@import "tailwindcss";
+```
+
+5. Start a local development server on Angular by running `ng serve --open`. If you already had one open then you need to restart it to allow Angular to internally set up the new configuration.
+
+Congratulations! You can now start using the utility classes from Tailwind CSS inside your Angular project.
+
+## Install Flowbite
+
+Now that you have both Angular and Tailwind CSS configured for your web application project you can proceed by installing the Flowbite Library to start leveraging the interactive UI components such as navbars, modals, cards, buttons, and more to build user interfaces faster with Tailwind CSS support.
+
+1. Install Flowbite as a dependency using NPM by running the following command:
+
+```bash
+npm install flowbite --save
+```
+
+2. Import the default theme variables from Flowbite inside your main `input.css` CSS file:
+
+```css
+@import "flowbite/src/themes/default";
+```
+
+3. Import the Flowbite plugin file in your CSS:
+
+```css
+@plugin "flowbite/plugin";
+```
+
+4. Configure the source files of Flowbite in your CSS:
+
+```css
+@source "../node_modules/flowbite";
+```
+
+5. Update the `app.component.ts` file to use the `initFlowbite` function to enable the interactive components via data attributes:
 
 ```javascript
 import { Component } from '@angular/core';
@@ -47,6 +117,58 @@ export class AppComponent implements OnInit {
 
 This will allow you to enable components such as the modals, navigation bars, dropdowns to dynamically set up the functionality via our data attributes interface.
 
+## Using with Angular SSR
+
+To enable using Flowbite with SSR (Server-Side Rendering) you need to create a custom service that will handle the dynamic import of Flowbite:
+
+```javascript
+// src/app/services/flowbite.service.ts
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class FlowbiteService {
+  constructor(@Inject(PLATFORM_ID) private platformId: any) {}
+
+  loadFlowbite(callback: (flowbite: any) => void) {
+    if (isPlatformBrowser(this.platformId)) {
+      import('flowbite').then(flowbite => {
+        callback(flowbite);
+      });
+    }
+  }
+}
+```
+
+**Important**: if you are using SSR make sure that this is the only way you're importing Flowbite in your Angular application to prevent the document object not being available on the server side.
+
+After that, you can use this service in your component to start using the Flowbite API and data attributes:
+
+```javascript
+// src/app/components/some-component/some-component.component.ts
+import { Component, OnInit } from '@angular/core';
+import { FlowbiteService } from '../../services/flowbite.service';
+
+@Component({
+  selector: 'app-some-component',
+  templateUrl: './some-component.component.html',
+  styleUrls: ['./some-component.component.css']
+})
+export class SomeComponent implements OnInit {
+  constructor(private flowbiteService: FlowbiteService) {}
+
+  ngOnInit(): void {
+    this.flowbiteService.loadFlowbite((flowbite) => {
+      initFlowbite();
+    });
+  }
+}
+```
+
+This will prevent the "document is undefined" error that happens after upgrading to `v2.4.1` for SSR applications.
+
 ## UI components
 
 Now that you have installed all of the frameworks and libraries you can start using the whole collection of UI components and templates from the [Flowbite UI Library](https://flowbite.com/docs/getting-started/introduction/) and [Blocks](https://flowbite.com/blocks/marketing/feature/).
@@ -63,9 +185,9 @@ Toggle modal
 <div id="defaultModal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative w-full max-w-2xl max-h-full">
         <!-- Modal content -->
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+        <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
             <!-- Modal header -->
-            <div class="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
+            <div class="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600 border-gray-200">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                     Terms of Service
                 </h3>
@@ -108,7 +230,7 @@ Let's add a [dropdown component](https://flowbite.com/docs/components/dropdowns/
     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
   </svg></button>
 
-<div id="dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+<div id="dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
     <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
       <li>
         <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
@@ -130,7 +252,7 @@ This example should also show a button that on the click event will show a dropd
 
 ### JavaScript API
 
-Alternatively to the data attributes strategy you can also choose to programatically set up the interactivity by directly importing the components from Flowbite and use the methods and options described in the documentation of Flowbite at the end of each page.
+Alternatively to the data attributes strategy you can also choose to programmatically set up the interactivity by directly importing the components from Flowbite and use the methods and options described in the documentation of Flowbite at the end of each page.
 
 For example, here's how you can set up a carousel component directly with JavaScript:
 
@@ -278,7 +400,7 @@ In this case the advantage is that you can control the behaviour of the componen
 
 ### Using TypeScript
 
-The Flowbite UI components also supports TypeScript and you can import the types and apply them when using the JavaScript API programatically.
+The Flowbite UI components also supports TypeScript and you can import the types and apply them when using the JavaScript API programmatically.
 
 For example, here's how you can import the types for the Carousel component:
 
@@ -291,6 +413,10 @@ const carousel: CarouselInterface = new Carousel(items, options);
 ```
 
 You can read more about using [Flowbite and TypeScript](https://flowbite.com/docs/getting-started/typescript/) by following our documentation guide.
+
+## Angular Starter Project
+
+We built a free and open-source [starter project](https://github.com/themesberg/tailwind-angular-starter) on GitHub that you can clone to use as a reference for this guide and for your own Angular web application configured with Flowbite and Tailwind CSS.
 
 ## Flowbite Angular Library
 
